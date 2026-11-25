@@ -52,6 +52,15 @@ services:
       product-service:
         condition: service_started
 
+  frontend:
+    build: ./frontend
+    container_name: retail-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - product-service
+      - order-service
+
 volumes:
   pgdata:
   mongodata:
