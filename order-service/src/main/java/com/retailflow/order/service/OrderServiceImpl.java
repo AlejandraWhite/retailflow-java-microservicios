@@ -7,6 +7,7 @@ import com.retailflow.order.model.*;
 import com.retailflow.order.repository.OrderEventRepository;
 import com.retailflow.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import com.retailflow.order.messaging.OrderEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderEventRepository eventRepository;
     private final ProductClient productClient;
+    private final OrderEventPublisher publisher;
 
     @Override
     @Transactional
@@ -47,6 +49,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order saved = orderRepository.save(order);
         registerEvent(saved.getId(), "CREATED", "Pedido creado por " + saved.getCustomerName());
+        publisher.publishOrderCreated(saved);
         return saved;
     }
 
