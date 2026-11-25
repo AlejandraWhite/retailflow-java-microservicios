@@ -42,7 +42,7 @@ flowchart LR
 Requisitos: Docker Desktop y Git Bash (o cualquier shell con Bash).
 
 ```bash
-git clone <URL_DEL_REPO> retailflow
+git clone (https://github.com/AlejandraWhite/retailflow-java-microservicios) retailflow
 cd retailflow
 
 # 1. Levantar bases de datos, microservicios y LocalStack
