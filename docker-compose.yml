@@ -10,6 +10,11 @@ services:
       - "5434:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U retail -d retail"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   mongo:
     image: mongo:7
@@ -18,6 +23,34 @@ services:
       - "27017:27017"
     volumes:
       - mongodata:/data/db
+
+  product-service:
+    build: ./product-service
+    container_name: retail-product-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/retail
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  order-service:
+    build: ./order-service
+    container_name: retail-order-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/retail
+      SPRING_MONGODB_URI: mongodb://mongo:27017/retail_events
+      PRODUCT_SERVICE_URL: http://product-service:8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      product-service:
+        condition: service_started
 
 volumes:
   pgdata:
